@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DERIADA’s SIMPLE PAYROLL | CS 1130</title>
+<style>
+:root{--steel:#004E89;--baltic:#1A659E;--tangerine:#FF6B35;--peach:#F7C59F;--beige:#EFEFD0;--ink:#0B2A45;--card:#FFFDF4;--hint:#46627a}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--beige);color:var(--ink);line-height:1.55;min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--steel);color:#fff;padding:1.75rem 1rem;text-align:center;border-bottom:6px solid var(--tangerine)}
+header h1{margin:0;font-size:clamp(1.4rem,4.5vw,2.3rem);letter-spacing:.04em;text-transform:uppercase}
+header p{margin:.3rem 0 0;font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:700;color:var(--peach);text-transform:uppercase}
+nav{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;padding:1rem;background:var(--baltic)}
+nav a{flex:0 1 auto;text-align:center;text-decoration:none;font-weight:800;font-size:1.05rem;padding:.9rem 1.4rem;border-radius:12px;background:var(--beige);color:var(--steel);border:3px solid transparent;box-shadow:0 3px 0 rgba(0,0,0,.25);transition:transform .15s,background .15s}
+nav a:hover{background:var(--peach);transform:translateY(-2px)}
+nav a[aria-current="page"]{background:var(--tangerine);color:var(--ink);border-color:var(--ink)}
+main{width:100%;max-width:1100px;margin:1.75rem auto;padding:0 1rem;flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem}
+.card{background:var(--card);border:2px solid var(--peach);border-radius:16px;padding:1.5rem;box-shadow:0 4px 14px rgba(0,78,137,.12);margin-bottom:1.25rem}
+.grid>.card{margin-bottom:0}
+.card h2{margin:0 0 .5rem;font-size:1.25rem;color:var(--steel)}
+.hint{margin:0 0 .5rem;color:var(--hint);font-size:.95rem}
+label{display:block;font-weight:700;margin:.8rem 0 .3rem;font-size:.95rem}
+input{width:100%;padding:.8rem .9rem;border:2px solid var(--peach);border-radius:10px;font-size:1.05rem;background:#fff;color:var(--ink)}
+input:focus{outline:3px solid var(--tangerine);border-color:var(--tangerine)}
+button{margin-top:1rem;padding:.8rem 1.5rem;border:0;border-radius:10px;background:var(--steel);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer}
+button:hover{background:var(--baltic)}
+button.danger{background:var(--tangerine);color:var(--ink)}
+button.danger:hover{background:#e85a24}
+.row{display:flex;gap:.9rem;flex-wrap:wrap;align-items:flex-end}
+.row>div{flex:1 1 160px}
+.result{margin-top:1rem;padding:.8rem 1rem;border-left:6px solid var(--tangerine);background:var(--beige);border-radius:8px;font-weight:700;min-height:3rem;word-break:break-word}
+.result:empty::before{content:"Result will appear here";color:var(--hint);font-weight:400}
+.error{color:#a5200f;border-left-color:#a5200f}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:.7rem .8rem;border-bottom:1px solid var(--peach);text-align:right;white-space:nowrap}
+th:nth-child(1),td:nth-child(1),th:nth-child(2),td:nth-child(2){text-align:left}
+th{background:var(--steel);color:#fff}
+tbody tr:nth-child(even){background:rgba(247,197,159,.25)}
+tfoot td{font-weight:800;background:var(--peach)}
+.empty{text-align:center;color:var(--hint);padding:1.25rem}
+.rate-table{min-width:0;font-size:.95rem}
+.rate-table th,.rate-table td{text-align:left;white-space:normal}
+footer{background:var(--steel);color:var(--beige);text-align:center;padding:1.25rem 1rem;font-size:.95rem;font-weight:600;border-top:6px solid var(--tangerine)}
+footer a{color:var(--peach)}
+/* home */
+.home{display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start}
+.profile{text-align:center;margin:0}
+.frame{border:6px solid var(--tangerine);border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 6px 0 var(--steel)}
+.frame img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+.profile h2{margin:1.1rem 0 .5rem;font-size:1.3rem}
+.profile p{margin:.25rem 0;font-size:1rem}
+.profile .sched{margin-top:.8rem;padding-top:.8rem;border-top:2px dashed var(--peach);font-size:.95rem;color:var(--hint)}
+.welcome{border-left:8px solid var(--tangerine);padding:1.5rem 1.75rem}
+.welcome h2{font-size:1.6rem}
+.welcome p{margin:0;font-size:1.1rem}
+.assign-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.assign{display:flex;flex-direction:column;gap:.6rem;min-height:200px;padding:1.75rem;text-decoration:none;color:var(--ink);background:var(--card);border:2px solid var(--peach);border-radius:18px;box-shadow:0 4px 14px rgba(0,78,137,.12);transition:transform .15s,border-color .15s}
+.assign:hover{transform:translateY(-5px);border-color:var(--tangerine)}
+.badge{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--tangerine);color:var(--ink);font-weight:800;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
+.assign h3{margin:0;font-size:1.35rem;color:var(--steel)}
+.assign p{margin:0;font-size:1rem;color:var(--hint);flex:1}
+.assign .go{font-weight:800;color:var(--baltic)}
+/* conversion groups */
+.group{background:rgba(247,197,159,.4);border-radius:20px;padding:1.25rem;margin-bottom:1.5rem}
+.group>h2{margin:0;font-size:1.4rem;color:var(--steel);text-transform:uppercase;letter-spacing:.03em}
+.group>p{margin:.2rem 0 1rem;color:var(--hint)}
+@media (max-width:860px){.home{grid-template-columns:1fr}.profile{max-width:340px;margin:0 auto}}
+@media (max-width:560px){.assign-grid{grid-template-columns:1fr}nav a{flex:1 1 100%}main{padding:0 .7rem}.card{padding:1.15rem}}
+</style>
+</head>
+<body>
+<header><h1>DERIADA&rsquo;s SIMPLE PAYROLL</h1><p>Assignment 4</p></header>
+<nav><a href="index.html">HOME</a><a href="conversion.html">CONVERSION</a><a href="tax.html">INCOME TAX CALCULATOR</a><a href="looping.html">Nth FACTORIAL, SUM AND AVERAGE</a><a href="payroll.html" aria-current="page">SIMPLE PAYROLL</a></nav>
+<main>
+
+<div class="card"><h2>Add Employee</h2>
+  <div class="row">
+    <div><label for="name">Employee Name</label><input type="text" id="name" placeholder="Ameg Kahlel V. Deriada"></div>
+    <div><label for="days">Days Worked</label><input type="number" id="days" min="0" step="any" placeholder="15"></div>
+    <div><label for="rate">Daily Rate</label><input type="number" id="rate" min="0" step="any" placeholder="600"></div>
+    <div><label for="deduction">Deduction Amount</label><input type="number" id="deduction" min="0" step="any" placeholder="500"></div>
+  </div>
+  <button id="add">Add Employee</button>
+  <div class="result error" id="msg" hidden></div>
+</div>
+
+<div class="card"><h2>Payroll List</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>No.</th><th>Employee Name</th><th>Days Worked</th><th>Daily Rate</th><th>Gross Pay</th><th>Deduction Amount</th><th>Net Pay</th></tr></thead>
+    <tbody id="body"></tbody>
+    <tfoot id="foot"></tfoot>
+  </table></div>
+</div>
+
+<div class="card"><h2>Delete Employee</h2>
+  <label for="line">Line Number to delete</label>
+  <input type="number" id="line" min="1" step="1" placeholder="e.g. 1">
+  <button class="danger" id="del">Delete</button>
+</div>
+</main>
+<footer>DERIADA | INTRODUCTION TO COMPUTING | <a href="mailto:akvderiada@addu.edu.ph">akvderiada@addu.edu.ph</a></footer>
+<script>
+const employees = [];
+
+const peso = (n) => n.toLocaleString('en-PH', { style: 'currency', currency: 'PHP' });
+const escapeHtml = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (id) => document.getElementById(id);
+
+const showMsg = (text) => { $('msg').textContent = text; $('msg').hidden = !text; };
+
+const render = () => {
+  const body = $('body');
+  if (employees.length === 0) {
+    body.innerHTML = '<tr><td colspan="7" class="empty">No employees yet. Add one above.</td></tr>';
+    $('foot').innerHTML = '';
+    return;
+  }
+  body.innerHTML = employees.map(({ name, days, rate, deduction }, i) => {
+    const gross = days * rate;
+    const net = gross - deduction;
+    return `<tr>
+      <td>${i + 1}</td><td>${escapeHtml(name)}</td><td>${days}</td><td>${peso(rate)}</td>
+      <td>${peso(gross)}</td><td>${peso(deduction)}</td><td>${peso(net)}</td></tr>`;
+  }).join('');
+  const totalGross = employees.reduce((s, e) => s + e.days * e.rate, 0);
+  const totalDed = employees.reduce((s, e) => s + e.deduction, 0);
+  $('foot').innerHTML = `<tr><td colspan="4">Totals</td><td>${peso(totalGross)}</td><td>${peso(totalDed)}</td><td>${peso(totalGross - totalDed)}</td></tr>`;
+};
+
+const addEmployee = () => {
+  const name = $('name').value.trim();
+  const days = parseFloat($('days').value);
+  const rate = parseFloat($('rate').value);
+  const deduction = parseFloat($('deduction').value);
+  if (!name || [days, rate, deduction].some(Number.isNaN) || days < 0 || rate < 0 || deduction < 0) {
+    showMsg('Please fill in all fields with valid values.');
+    return;
+  }
+  showMsg('');
+  employees.push({ name, days, rate, deduction });
+  ['name', 'days', 'rate', 'deduction'].forEach(id => { $(id).value = ''; });
+  $('name').focus();
+  render();
+};
+
+const deleteEmployee = () => {
+  const line = parseInt($('line').value, 10);
+  if (Number.isNaN(line) || line < 1 || line > employees.length) {
+    showMsg(`Enter a valid line number (1 to ${employees.length || 1}).`);
+    return;
+  }
+  showMsg('');
+  employees.splice(line - 1, 1);
+  $('line').value = '';
+  render();
+};
+
+$('add').addEventListener('click', addEmployee);
+$('del').addEventListener('click', deleteEmployee);
+render();
+</script>
+</body>
+</html>
